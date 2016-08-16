@@ -384,7 +384,7 @@ window.Game = (function() {
       if (evt.keyCode === 32 && !this._deactivated) {
         evt.preventDefault();
         var needToRestartTheGame = this.state.currentStatus === Verdict.WIN ||
-            this.state.currentStatus === Verdict.FAIL;
+          this.state.currentStatus === Verdict.FAIL;
         this.initializeLevelAndStart(this.level, needToRestartTheGame);
 
         window.removeEventListener('keydown', this._pauseListener);
@@ -395,18 +395,94 @@ window.Game = (function() {
      * Отрисовка экрана паузы.
      */
     _drawPauseScreen: function() {
+      var paramRect = {
+        top: 50,
+        left: 200,
+        width: 310,
+        height: 153,
+        padding: 10,
+        fill: '#FFF',
+        font: {
+          name: 'PT Mono',
+          size: 16,
+          color: '#000',
+          lineHeight: 1.2
+        },
+        shadow: {
+          color: 'rgba(0,0,0,0.7)',
+          blur: 5,
+          offset: {
+            x: 10,
+            y: 10
+          }
+        }
+      };
+
+      function writeCanvas(text, rect, ctx) {
+        // Рисую прямоугольник с тенью
+        ctx.save();
+        ctx.rect(rect.left, rect.top, rect.width, rect.height);
+        ctx.strokeRect(rect.left, rect.top, rect.width, rect.height);
+        ctx.fillStyle = rect.fill;
+        ctx.save();
+        ctx.shadowColor = rect.shadow.color;
+        ctx.shadowBlur = rect.shadow.blur;
+        ctx.shadowOffsetX = rect.shadow.offset.x;
+        ctx.shadowOffsetY = rect.shadow.offset.y;
+        ctx.fill();
+        ctx.restore();
+
+        // Подготовка текста
+        var contentWidth = rect.width - rect.padding * 2;
+        var contentHeight = rect.height - rect.padding * 2;
+        var contentLeft = rect.left + rect.padding;
+        var contentTop = rect.top + rect.padding;
+        var lineHeight = Math.round(rect.font.size * rect.font.lineHeight);
+        ctx.font = rect.font.size + 'px "' + rect.font.name + '"';
+        ctx.textBaseline = 'hanging';
+        ctx.fillStyle = rect.font.color;
+
+        var words = text.split(' ');
+        var countWords = words.length;
+        var countLine = Math.floor(contentHeight / lineHeight);
+        var line = '';
+        // Вывод текста
+        for (var n = 0; n < countWords; n++) {
+          var testLine = line + words[n] + ' ';
+          var testWidth = ctx.measureText(testLine).width;
+          if (testWidth > contentWidth) {
+            ctx.fillText(line, contentLeft, contentTop);
+            line = words[n] + ' ';
+            contentTop += lineHeight;
+            countLine--;
+            if (countLine === 0) {
+              break;
+            }
+          } else {
+            line = testLine;
+          }
+        }
+        if ((countLine > 0) && (line.length > 0)) {
+          ctx.fillText(line, contentLeft, contentTop);
+        }
+        ctx.restore();
+      }
       switch (this.state.currentStatus) {
         case Verdict.WIN:
-          console.log('you have won!');
+          writeCanvas('You have won! Поздравляем, вы выиграли!', paramRect, this.ctx);
+          //console.log('you have won!');
           break;
         case Verdict.FAIL:
-          console.log('you have failed!');
+          writeCanvas('You have failed! Вы проиграли, очень жаль...', paramRect, this.ctx);
+          //console.log('you have failed!');
           break;
         case Verdict.PAUSE:
-          console.log('game is on pause!');
+          writeCanvas('Game is on pause! Игра поставленна на паузу! ', paramRect, this.ctx);
+          //console.log('game is on pause!');
           break;
         case Verdict.INTRO:
-          console.log('welcome to the game! Press Space to start');
+          writeCanvas('Welcome to the game! Press Space to start. Добро пожаловать в игру! Нажмите пробел, чтобы начать.', paramRect, this.ctx);
+          //console.log('welcome to the game! Press Space to start');
           break;
       }
     },
@@ -522,8 +598,8 @@ window.Game = (function() {
             })[0];
 
             return me.state === ObjectState.DISPOSED ?
-                Verdict.FAIL :
-                Verdict.CONTINUE;
+              Verdict.FAIL :
+              Verdict.CONTINUE;
           },
 
           /**
@@ -542,8 +618,8 @@ window.Game = (function() {
            */
           function checkTime(state) {
             return Date.now() - state.startTime > 3 * 60 * 1000 ?
-                Verdict.FAIL :
-                Verdict.CONTINUE;
+              Verdict.FAIL :
+              Verdict.CONTINUE;
           }
         ];
       }
@@ -591,8 +667,8 @@ window.Game = (function() {
         if (object.sprite) {
           var image = new Image(object.width, object.height);
           image.src = (object.spriteReversed && object.direction & Direction.LEFT) ?
-              object.spriteReversed :
-              object.sprite;
+            object.spriteReversed :
+            object.sprite;
           this.ctx.drawImage(image, object.x, object.y, object.width, object.height);
         }
       }, this);
