@@ -420,6 +420,7 @@ window.Game = (function() {
 
       function writeCanvas(text, rect, ctx) {
         // Рисую прямоугольник с тенью
+        ctx.save();
         ctx.rect(rect.left, rect.top, rect.width, rect.height);
         ctx.strokeRect(rect.left, rect.top, rect.width, rect.height);
         ctx.fillStyle = rect.fill;
@@ -464,6 +465,7 @@ window.Game = (function() {
         if ((countLine > 0) && (line.length > 0)) {
           ctx.fillText(line, contentLeft, contentTop);
         }
+        ctx.restore();
       }
       switch (this.state.currentStatus) {
         case Verdict.WIN:
