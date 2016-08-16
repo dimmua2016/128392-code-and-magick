@@ -398,8 +398,8 @@ window.Game = (function() {
       var paramRect = {
         top: 50,
         left: 200,
-        width: 310,
-        height: 153,
+        width: 210,
+        height: 140,
         padding: 10,
         fill: '#FFF',
         font: {
