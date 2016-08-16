@@ -418,7 +418,11 @@ window.Game = (function() {
         }
       };
 
-      function writeCanvas(text, rect, ctx) {
+      function writeCanvas(text, rect, ctx, autoHeight) {
+        if (typeof autoHeight === 'undefined') {
+          autoHeight = false;
+        }
+
         // Рисую прямоугольник с тенью
         ctx.save();
         ctx.rect(rect.left, rect.top, rect.width, rect.height);
@@ -431,7 +435,6 @@ window.Game = (function() {
         ctx.shadowOffsetY = rect.shadow.offset.y;
         ctx.fill();
         ctx.restore();
-
         // Подготовка текста
         var contentWidth = rect.width - rect.padding * 2;
         var contentHeight = rect.height - rect.padding * 2;
@@ -467,21 +470,22 @@ window.Game = (function() {
         }
         ctx.restore();
       }
+
       switch (this.state.currentStatus) {
         case Verdict.WIN:
-          writeCanvas('You have won! Поздравляем, вы выиграли!', paramRect, this.ctx);
+          writeCanvas('You have won! Поздравляем, вы выиграли!', paramRect, this.ctx, true);
           //console.log('you have won!');
           break;
         case Verdict.FAIL:
-          writeCanvas('You have failed! Вы проиграли, очень жаль...', paramRect, this.ctx);
+          writeCanvas('You have failed! Вы проиграли, очень жаль...', paramRect, this.ctx, true);
           //console.log('you have failed!');
           break;
         case Verdict.PAUSE:
-          writeCanvas('Game is on pause! Игра поставленна на паузу! ', paramRect, this.ctx);
+          writeCanvas('Game is on pause! Игра поставленна на паузу! ', paramRect, this.ctx, true);
           //console.log('game is on pause!');
           break;
         case Verdict.INTRO:
-          writeCanvas('Welcome to the game! Press Space to start. Добро пожаловать в игру! Нажмите пробел, чтобы начать.', paramRect, this.ctx);
+          writeCanvas('Welcome to the game! Press Space to start. Добро пожаловать в игру! Нажмите пробел, чтобы начать.', paramRect, this.ctx, true);
           //console.log('welcome to the game! Press Space to start');
           break;
       }
