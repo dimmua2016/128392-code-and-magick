@@ -395,7 +395,7 @@ window.Game = (function() {
      * Отрисовка экрана паузы.
      */
     _drawPauseScreen: function() {
-      var rect = {
+      var paramRect = {
         top: 50,
         left: 200,
         width: 310,
@@ -467,19 +467,19 @@ window.Game = (function() {
       }
       switch (this.state.currentStatus) {
         case Verdict.WIN:
-          writeCanvas('You have won! Поздравляем, вы выиграли!', rect, this.ctx);
+          writeCanvas('You have won! Поздравляем, вы выиграли!', paramRect, this.ctx);
           //console.log('you have won!');
           break;
         case Verdict.FAIL:
-          writeCanvas('You have failed! Вы проиграли, очень жаль...', rect, this.ctx);
+          writeCanvas('You have failed! Вы проиграли, очень жаль...', paramRect, this.ctx);
           //console.log('you have failed!');
           break;
         case Verdict.PAUSE:
-          writeCanvas('Game is on pause! Игра поставленна на паузу! ', rect, this.ctx);
+          writeCanvas('Game is on pause! Игра поставленна на паузу! ', paramRect, this.ctx);
           //console.log('game is on pause!');
           break;
         case Verdict.INTRO:
-          writeCanvas('Welcome to the game! Press Space to start. Добро пожаловать в игру! Нажмите пробел, чтобы начать.', rect, this.ctx);
+          writeCanvas('Welcome to the game! Press Space to start. Добро пожаловать в игру! Нажмите пробел, чтобы начать.', paramRect, this.ctx);
           //console.log('welcome to the game! Press Space to start');
           break;
       }
