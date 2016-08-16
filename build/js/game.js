@@ -384,7 +384,7 @@ window.Game = (function() {
       if (evt.keyCode === 32 && !this._deactivated) {
         evt.preventDefault();
         var needToRestartTheGame = this.state.currentStatus === Verdict.WIN ||
-            this.state.currentStatus === Verdict.FAIL;
+          this.state.currentStatus === Verdict.FAIL;
         this.initializeLevelAndStart(this.level, needToRestartTheGame);
 
         window.removeEventListener('keydown', this._pauseListener);
@@ -395,18 +395,88 @@ window.Game = (function() {
      * Отрисовка экрана паузы.
      */
     _drawPauseScreen: function() {
+      // моя функция writeCanvas
+      function writeCanvas(text, ctx) {
+        console.dir(ctx);
+        // Параметры проямоугольника, можно вынести отдельно, я просто не знаю как лучше. Хотелось, чтобы функция была универсальна.
+        var rect = {
+          top: 50,
+          left: 200,
+          width: 310,
+          height: 153,
+          padding: 10,
+          font: {
+            name: 'PT Mono',
+            size: 16,
+            color: '#000',
+            lineHeight: 1.2
+          }
+        };
+
+        // Рисую прямоугольник с тенью
+        ctx.rect(rect.left, rect.top, rect.width, rect.height);
+        ctx.strokeRect(rect.left, rect.top, rect.width, rect.height);
+        ctx.fillStyle = '#FFF';
+        ctx.save();
+        ctx.shadowColor = 'rgba(0,0,0,0.7)';
+        ctx.shadowBlur = 5;
+        ctx.shadowOffsetX = 10;
+        ctx.shadowOffsetY = 10;
+        ctx.fill();
+        ctx.restore();
+
+        // Подготовка текста
+        var contentWidth = rect.width - rect.padding * 2;
+        var contentHeight = rect.height - rect.padding * 2;
+        var contentLeft = rect.left + rect.padding;
+        var contentTop = rect.top + rect.padding;
+        var lineHeight = Math.round(rect.font.size * rect.font.lineHeight);
+        ctx.font = rect.font.size + 'px "' + rect.font.name + '"'; // нужны ли тут двойные кавычки? и без них работает
+        ctx.textBaseline = 'hanging';
+        ctx.fillStyle = rect.font.color;
+
+        var words = text.split(' ');
+        var countWords = words.length;
+        var countLine = Math.floor(contentHeight / lineHeight);
+        var line = '';
+        // вывод текста. Да, не очень красиво использовать break но так у меня получился нормальный алгоритм.
+        for (var n = 0; n < countWords; n++) {
+          var testLine = line + words[n] + ' ';
+          var testWidth = ctx.measureText(testLine).width;
+          if (testWidth > contentWidth) {
+            ctx.fillText(line, contentLeft, contentTop);
+            line = words[n] + ' ';
+            contentTop += lineHeight;
+            countLine--;
+            if (countLine === 0) {
+              break;
+            }
+          } else {
+            line = testLine;
+
+          }
+        }
+        if ((countLine > 0) && (line.length > 0)) {
+          ctx.fillText(line, contentLeft, contentTop);
+        }
+      }
+      var addText = 'Пример большого текста. Слова разделяются по пробелам, а затем выстраиваются в линии, но так чтобы их ширина была меньше ширины прямоугольника. Дополнительно высчитывается сколько всего линии может вместиться. Получилось вроде хорошо. Правда, меня смущают такие вещи: использование «break» в коде и нормально ли то, что я внутри метода описываю функцию?';
       switch (this.state.currentStatus) {
         case Verdict.WIN:
-          console.log('you have won!');
+          writeCanvas('You have won! ' + addText, this.ctx);
+          //console.log('you have won!');
           break;
         case Verdict.FAIL:
-          console.log('you have failed!');
+          writeCanvas('You have failed! ' + addText, this.ctx);
+          //console.log('you have failed!');
           break;
         case Verdict.PAUSE:
-          console.log('game is on pause!');
+          writeCanvas('Game is on pause! ' + addText, this.ctx);
+          //console.log('game is on pause!');
           break;
         case Verdict.INTRO:
-          console.log('welcome to the game! Press Space to start');
+          writeCanvas('Welcome to the game! Press Space to start ' + addText, this.ctx);
+          //console.log('welcome to the game! Press Space to start');
           break;
       }
     },
@@ -522,8 +592,8 @@ window.Game = (function() {
             })[0];
 
             return me.state === ObjectState.DISPOSED ?
-                Verdict.FAIL :
-                Verdict.CONTINUE;
+              Verdict.FAIL :
+              Verdict.CONTINUE;
           },
 
           /**
@@ -542,8 +612,8 @@ window.Game = (function() {
            */
           function checkTime(state) {
             return Date.now() - state.startTime > 3 * 60 * 1000 ?
-                Verdict.FAIL :
-                Verdict.CONTINUE;
+              Verdict.FAIL :
+              Verdict.CONTINUE;
           }
         ];
       }
@@ -591,8 +661,8 @@ window.Game = (function() {
         if (object.sprite) {
           var image = new Image(object.width, object.height);
           image.src = (object.spriteReversed && object.direction & Direction.LEFT) ?
-              object.spriteReversed :
-              object.sprite;
+            object.spriteReversed :
+            object.sprite;
           this.ctx.drawImage(image, object.x, object.y, object.width, object.height);
         }
       }, this);
