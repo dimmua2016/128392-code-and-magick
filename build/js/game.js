@@ -398,8 +398,8 @@ window.Game = (function() {
       var paramRect = {
         top: 50,
         left: 200,
-        width: 210,
-        height: 140,
+        width: 180,
+        height: 150,
         padding: 10,
         fill: '#FFF',
         font: {
@@ -419,40 +419,76 @@ window.Game = (function() {
       };
 
       function writeCanvas(text, rect, ctx, autoHeight) {
+        var contentWidth = 0,
+          contentHeight = 0,
+          contentLeft = 0,
+          contentTop = 0,
+          lineHeight = 0,
+          words = [],
+          countWords = 0,
+          countLine = 0,
+          line = '',
+          testLine = '',
+          testWidth = 0,
+          n = 0;
+
         if (typeof autoHeight === 'undefined') {
           autoHeight = false;
         }
 
-        // Рисую прямоугольник с тенью
         ctx.save();
-        ctx.rect(rect.left, rect.top, rect.width, rect.height);
-        ctx.strokeRect(rect.left, rect.top, rect.width, rect.height);
-        ctx.fillStyle = rect.fill;
+
+        if (autoHeight) {
+          ctx.font = rect.font.size + 'px "' + rect.font.name + '"';
+          contentWidth = rect.width - rect.padding * 2;
+          words = text.split(' ');
+          countWords = words.length;
+          line = '';
+          // Вычисляю сколько строчек занимает текст, алгоритм похож на вывод текста
+          for (n = 0; n < countWords; n++) {
+            testLine = line + words[n] + ' ';
+            testWidth = ctx.measureText(testLine).width;
+            if (testWidth > contentWidth) {
+              line = words[n] + ' ';
+              countLine++;
+            } else {
+              line = testLine;
+            }
+          }
+          countLine++;
+          rect.height = (countLine * Math.round(rect.font.size * rect.font.lineHeight)) + (rect.padding * 2);
+        } // конец if (autoHeight)
+
+        // Рисую прямоугольник с тенью
         ctx.save();
         ctx.shadowColor = rect.shadow.color;
         ctx.shadowBlur = rect.shadow.blur;
         ctx.shadowOffsetX = rect.shadow.offset.x;
         ctx.shadowOffsetY = rect.shadow.offset.y;
-        ctx.fill();
+        ctx.fillStyle = rect.fill;
+        ctx.fillRect(rect.left, rect.top, rect.width, rect.height);
         ctx.restore();
+        ctx.strokeStyle = rect.shadow.color;
+        ctx.strokeRect(rect.left, rect.top, rect.width, rect.height);
+
         // Подготовка текста
-        var contentWidth = rect.width - rect.padding * 2;
-        var contentHeight = rect.height - rect.padding * 2;
-        var contentLeft = rect.left + rect.padding;
-        var contentTop = rect.top + rect.padding;
-        var lineHeight = Math.round(rect.font.size * rect.font.lineHeight);
+        contentWidth = rect.width - rect.padding * 2;
+        contentHeight = rect.height - rect.padding * 2;
+        contentLeft = rect.left + rect.padding;
+        contentTop = rect.top + rect.padding;
+        lineHeight = Math.round(rect.font.size * rect.font.lineHeight);
+
         ctx.font = rect.font.size + 'px "' + rect.font.name + '"';
         ctx.textBaseline = 'hanging';
         ctx.fillStyle = rect.font.color;
-
-        var words = text.split(' ');
-        var countWords = words.length;
-        var countLine = Math.floor(contentHeight / lineHeight);
-        var line = '';
-        // Вывод текста
-        for (var n = 0; n < countWords; n++) {
-          var testLine = line + words[n] + ' ';
-          var testWidth = ctx.measureText(testLine).width;
+        words = text.split(' ');
+        countWords = words.length;
+        countLine = Math.floor(contentHeight / lineHeight);
+        line = '';
+        // Вывод текста на канвас
+        for (n = 0; n < countWords; n++) {
+          testLine = line + words[n] + ' ';
+          testWidth = ctx.measureText(testLine).width;
           if (testWidth > contentWidth) {
             ctx.fillText(line, contentLeft, contentTop);
             line = words[n] + ' ';
