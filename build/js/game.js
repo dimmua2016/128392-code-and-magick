@@ -425,39 +425,34 @@ window.Game = (function() {
           contentTop = 0,
           lineHeight = 0,
           words = [],
-          countWords = 0,
           countLine = 0,
           line = '',
           testLine = '',
           testWidth = 0,
-          n = 0;
-
-        if (typeof autoHeight === 'undefined') {
-          autoHeight = false;
-        }
+          n = 0,
+          lines = [];
 
         ctx.save();
+        contentWidth = rect.width - rect.padding * 2;
+        ctx.font = rect.font.size + 'px "' + rect.font.name + '"';
+        words = text.split(' ');
+
+        // Вычисляю сколько строчек занимает текст и заношу готовые строки в массив lines
+        for (n = 0; n < words.length; n++) {
+          testLine = line + words[n] + ' ';
+          testWidth = ctx.measureText(testLine).width;
+          if (testWidth > contentWidth) {
+            lines[lines.length] = line;
+            line = words[n] + ' ';
+          } else {
+            line = testLine;
+          }
+        }
+        lines[lines.length] = line;
 
         if (autoHeight) {
-          ctx.font = rect.font.size + 'px "' + rect.font.name + '"';
-          contentWidth = rect.width - rect.padding * 2;
-          words = text.split(' ');
-          countWords = words.length;
-          line = '';
-          // Вычисляю сколько строчек занимает текст, алгоритм похож на вывод текста
-          for (n = 0; n < countWords; n++) {
-            testLine = line + words[n] + ' ';
-            testWidth = ctx.measureText(testLine).width;
-            if (testWidth > contentWidth) {
-              line = words[n] + ' ';
-              countLine++;
-            } else {
-              line = testLine;
-            }
-          }
-          countLine++;
-          rect.height = (countLine * Math.round(rect.font.size * rect.font.lineHeight)) + (rect.padding * 2);
-        } // конец if (autoHeight)
+          rect.height = (lines.length * Math.round(rect.font.size * rect.font.lineHeight)) + (rect.padding * 2);
+        }
 
         // Рисую прямоугольник с тенью
         ctx.save();
@@ -468,41 +463,23 @@ window.Game = (function() {
         ctx.fillStyle = rect.fill;
         ctx.fillRect(rect.left, rect.top, rect.width, rect.height);
         ctx.restore();
+
         ctx.strokeStyle = rect.shadow.color;
         ctx.strokeRect(rect.left, rect.top, rect.width, rect.height);
+        ctx.textBaseline = 'hanging';
+        ctx.fillStyle = rect.font.color;
 
-        // Подготовка текста
-        contentWidth = rect.width - rect.padding * 2;
+        // величина contentWidth - расчитывается чуть раньше
         contentHeight = rect.height - rect.padding * 2;
         contentLeft = rect.left + rect.padding;
         contentTop = rect.top + rect.padding;
         lineHeight = Math.round(rect.font.size * rect.font.lineHeight);
+        countLine = Math.min(Math.floor(contentHeight / lineHeight), lines.length);
 
-        ctx.font = rect.font.size + 'px "' + rect.font.name + '"';
-        ctx.textBaseline = 'hanging';
-        ctx.fillStyle = rect.font.color;
-        words = text.split(' ');
-        countWords = words.length;
-        countLine = Math.floor(contentHeight / lineHeight);
-        line = '';
         // Вывод текста на канвас
-        for (n = 0; n < countWords; n++) {
-          testLine = line + words[n] + ' ';
-          testWidth = ctx.measureText(testLine).width;
-          if (testWidth > contentWidth) {
-            ctx.fillText(line, contentLeft, contentTop);
-            line = words[n] + ' ';
-            contentTop += lineHeight;
-            countLine--;
-            if (countLine === 0) {
-              break;
-            }
-          } else {
-            line = testLine;
-          }
-        }
-        if ((countLine > 0) && (line.length > 0)) {
-          ctx.fillText(line, contentLeft, contentTop);
+        for (n = 0; n < countLine; n++) {
+          ctx.fillText(lines[n], contentLeft, contentTop);
+          contentTop += lineHeight;
         }
         ctx.restore();
       }
@@ -517,7 +494,7 @@ window.Game = (function() {
           //console.log('you have failed!');
           break;
         case Verdict.PAUSE:
-          writeCanvas('Game is on pause! Игра поставленна на паузу! ', paramRect, this.ctx, true);
+          writeCanvas('Game is on pause! Игра поставленна на паузу! ', paramRect, this.ctx, false);
           //console.log('game is on pause!');
           break;
         case Verdict.INTRO:
