@@ -398,8 +398,8 @@ window.Game = (function() {
       var paramRect = {
         top: 50,
         left: 200,
-        width: 210,
-        height: 140,
+        width: 180,
+        height: 150,
         padding: 10,
         fill: '#FFF',
         font: {
@@ -418,70 +418,87 @@ window.Game = (function() {
         }
       };
 
-      function writeCanvas(text, rect, ctx) {
-        // Рисую прямоугольник с тенью
+      function writeCanvas(text, rect, ctx, autoHeight) {
+        var contentWidth = 0,
+          contentHeight = 0,
+          contentLeft = 0,
+          contentTop = 0,
+          lineHeight = 0,
+          words = [],
+          countLine = 0,
+          line = '',
+          testLine = '',
+          testWidth = 0,
+          n = 0,
+          lines = [];
+
         ctx.save();
-        ctx.rect(rect.left, rect.top, rect.width, rect.height);
-        ctx.strokeRect(rect.left, rect.top, rect.width, rect.height);
-        ctx.fillStyle = rect.fill;
+        contentWidth = rect.width - rect.padding * 2;
+        ctx.font = rect.font.size + 'px "' + rect.font.name + '"';
+        words = text.split(' ');
+
+        // Вычисляю сколько строчек занимает текст и заношу готовые строки в массив lines
+        for (n = 0; n < words.length; n++) {
+          testLine = line + words[n] + ' ';
+          testWidth = ctx.measureText(testLine).width;
+          if (testWidth > contentWidth) {
+            lines[lines.length] = line;
+            line = words[n] + ' ';
+          } else {
+            line = testLine;
+          }
+        }
+        lines[lines.length] = line;
+
+        if (autoHeight) {
+          rect.height = (lines.length * Math.round(rect.font.size * rect.font.lineHeight)) + (rect.padding * 2);
+        }
+
+        // Рисую прямоугольник с тенью
         ctx.save();
         ctx.shadowColor = rect.shadow.color;
         ctx.shadowBlur = rect.shadow.blur;
         ctx.shadowOffsetX = rect.shadow.offset.x;
         ctx.shadowOffsetY = rect.shadow.offset.y;
-        ctx.fill();
+        ctx.fillStyle = rect.fill;
+        ctx.fillRect(rect.left, rect.top, rect.width, rect.height);
         ctx.restore();
 
-        // Подготовка текста
-        var contentWidth = rect.width - rect.padding * 2;
-        var contentHeight = rect.height - rect.padding * 2;
-        var contentLeft = rect.left + rect.padding;
-        var contentTop = rect.top + rect.padding;
-        var lineHeight = Math.round(rect.font.size * rect.font.lineHeight);
-        ctx.font = rect.font.size + 'px "' + rect.font.name + '"';
+        ctx.strokeStyle = rect.shadow.color;
+        ctx.strokeRect(rect.left, rect.top, rect.width, rect.height);
         ctx.textBaseline = 'hanging';
         ctx.fillStyle = rect.font.color;
 
-        var words = text.split(' ');
-        var countWords = words.length;
-        var countLine = Math.floor(contentHeight / lineHeight);
-        var line = '';
-        // Вывод текста
-        for (var n = 0; n < countWords; n++) {
-          var testLine = line + words[n] + ' ';
-          var testWidth = ctx.measureText(testLine).width;
-          if (testWidth > contentWidth) {
-            ctx.fillText(line, contentLeft, contentTop);
-            line = words[n] + ' ';
-            contentTop += lineHeight;
-            countLine--;
-            if (countLine === 0) {
-              break;
-            }
-          } else {
-            line = testLine;
-          }
-        }
-        if ((countLine > 0) && (line.length > 0)) {
-          ctx.fillText(line, contentLeft, contentTop);
+        // величина contentWidth - расчитывается чуть раньше
+        contentHeight = rect.height - rect.padding * 2;
+        contentLeft = rect.left + rect.padding;
+        contentTop = rect.top + rect.padding;
+        lineHeight = Math.round(rect.font.size * rect.font.lineHeight);
+        countLine = Math.min(Math.floor(contentHeight / lineHeight), lines.length);
+
+        // Вывод текста на канвас
+        for (n = 0; n < countLine; n++) {
+          ctx.fillText(lines[n], contentLeft, contentTop);
+          contentTop += lineHeight;
         }
         ctx.restore();
       }
+
       switch (this.state.currentStatus) {
         case Verdict.WIN:
-          writeCanvas('You have won! Поздравляем, вы выиграли!', paramRect, this.ctx);
+          writeCanvas('You have won! Поздравляем, вы выиграли!', paramRect, this.ctx, true);
           //console.log('you have won!');
           break;
         case Verdict.FAIL:
-          writeCanvas('You have failed! Вы проиграли, очень жаль...', paramRect, this.ctx);
+          writeCanvas('You have failed! Вы проиграли, очень жаль...', paramRect, this.ctx, true);
           //console.log('you have failed!');
           break;
         case Verdict.PAUSE:
-          writeCanvas('Game is on pause! Игра поставленна на паузу! ', paramRect, this.ctx);
+          writeCanvas('Game is on pause! Игра поставленна на паузу! ', paramRect, this.ctx, false);
           //console.log('game is on pause!');
           break;
         case Verdict.INTRO:
-          writeCanvas('Welcome to the game! Press Space to start. Добро пожаловать в игру! Нажмите пробел, чтобы начать.', paramRect, this.ctx);
+          writeCanvas('Welcome to the game! Press Space to start. Добро пожаловать в игру! Нажмите пробел, чтобы начать.', paramRect, this.ctx, true);
           //console.log('welcome to the game! Press Space to start');
           break;
       }
