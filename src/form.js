@@ -76,22 +76,30 @@ function goValidate() {
 
   //Поле "Имя" блока "Осталось заполнить"
   if (reviewNameField.value.length < MIN_NAME_LENGTH) {
-    reviewNameLabel.classList.remove('invisible');
+    switchVisible(reviewNameLabel, true);
   } else {
-    reviewNameLabel.classList.add('invisible');
+    switchVisible(reviewNameLabel, false);
   }
 
   //Поле "Отзыв" блока "Осталось заполнить"
   if ((reviewTextField.value.length === 0) && (reviewMarkRadioValue < MIN_MARK_TEXT_REQUIRED)) {
-    reviewTextLabel.classList.remove('invisible');
+    switchVisible(reviewTextLabel, true);
   } else {
-    reviewTextLabel.classList.add('invisible');
+    switchVisible(reviewTextLabel, false);
   }
 
   //Блок "Осталось заполнить"
   if (reviewNameLabel.classList.contains('invisible') && reviewTextLabel.classList.contains('invisible')) {
-    reviewFieldsBlock.classList.add('invisible');
+    switchVisible(reviewFieldsBlock, false);
   } else {
-    reviewFieldsBlock.classList.remove('invisible');
+    switchVisible(reviewFieldsBlock, true);
+  }
+}
+
+function switchVisible(elem, flag) {
+  if (flag) {
+    elem.classList.remove('invisible');
+  } else {
+    elem.classList.add('invisible');
   }
 }
