@@ -97,3 +97,17 @@ function goValidate() {
   }
 
 }
+
+var cookies = require('browser-cookies');
+
+// Сохранить куки
+var reviewForm = document.querySelector('.review-form');
+reviewForm.onsubmit = (function() {
+  var reviewMarkRadioValue = document.querySelector('input[name="review-mark"]:checked').value;
+  cookies.set('review-mark', reviewMarkRadioValue);
+  cookies.set('review-name', reviewNameField.value);
+});
+
+//Прочитать куки
+reviewNameField.value = cookies.get('review-name');
+alert(cookies.get('review-name'));
