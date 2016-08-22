@@ -76,30 +76,43 @@ function goValidate() {
 
   //Поле "Имя" блока "Осталось заполнить"
   if (reviewNameField.value.length < MIN_NAME_LENGTH) {
-    switchVisible(reviewNameLabel, true);
+    controlVisible(reviewNameLabel, true);
   } else {
-    switchVisible(reviewNameLabel, false);
+    controlVisible(reviewNameLabel, false);
   }
 
   //Поле "Отзыв" блока "Осталось заполнить"
   if ((reviewTextField.value.length === 0) && (reviewMarkRadioValue < MIN_MARK_TEXT_REQUIRED)) {
-    switchVisible(reviewTextLabel, true);
+    controlVisible(reviewTextLabel, true);
   } else {
-    switchVisible(reviewTextLabel, false);
+    controlVisible(reviewTextLabel, false);
   }
 
   //Блок "Осталось заполнить"
-  if (reviewNameLabel.classList.contains('invisible') && reviewTextLabel.classList.contains('invisible')) {
-    switchVisible(reviewFieldsBlock, false);
+
+  if (controlVisible(reviewNameLabel) || controlVisible(reviewTextLabel)) {
+    controlVisible(reviewFieldsBlock, true);
   } else {
-    switchVisible(reviewFieldsBlock, true);
+    controlVisible(reviewFieldsBlock, false);
   }
 }
 
-function switchVisible(elem, flag) {
-  if (flag) {
-    elem.classList.remove('invisible');
+// Если в функцию передать один параметр "elem", то функция вернёт true или false в зависимости видел ли данный элемент
+// Вторым параметров в функцию можно передать true или false, чтобы показать или скрыть элемент
+function controlVisible(elem, flag) {
+  var answer;
+  if (typeof flag === 'undefined') {
+    if (window.getComputedStyle(elem).display !== 'none') {
+      answer = true;
+    } else {
+      answer = false;
+    }
   } else {
-    elem.classList.add('invisible');
+    if (flag) {
+      elem.classList.remove('invisible');
+    } else {
+      elem.classList.add('invisible');
+    }
   }
+  return answer;
 }
