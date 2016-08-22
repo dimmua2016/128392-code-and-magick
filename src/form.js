@@ -57,8 +57,8 @@ reviewFormGroupMark.onclick = (function(event) {
 goValidate();
 
 function goValidate() {
-  var MIN_NAME_LENGTH = 2;
-  var MIN_MARK_TEXT_REQUIRED = 3;
+  var MIN_MARK = 3;
+  var flag;
 
   var reviewMarkRadioValue = document.querySelector('input[name="review-mark"]:checked').value;
   var reviewSubmitButton = document.querySelector('.review-submit');
@@ -67,38 +67,28 @@ function goValidate() {
   var reviewTextLabel = reviewFieldsBlock.querySelector('label[for="review-text"]');
 
   // Кнопка "Добавить отзыв"
-  if (((reviewMarkRadioValue < MIN_MARK_TEXT_REQUIRED) && (reviewNameField.value.length >= MIN_NAME_LENGTH) && (reviewTextField.value.length > 0)) ||
-    ((reviewMarkRadioValue >= MIN_MARK_TEXT_REQUIRED) && (reviewNameField.value.length >= MIN_NAME_LENGTH))) {
+  if (((reviewMarkRadioValue < MIN_MARK) && (reviewNameField.value) && (reviewTextField.value)) ||
+    ((reviewMarkRadioValue >= MIN_MARK) && (reviewNameField.value))) {
     reviewSubmitButton.removeAttribute('disabled');
   } else {
     reviewSubmitButton.setAttribute('disabled', '');
   }
 
   //Поле "Имя" блока "Осталось заполнить"
-  if (reviewNameField.value.length < MIN_NAME_LENGTH) {
-    controlVisible(reviewNameLabel, true);
-  } else {
-    controlVisible(reviewNameLabel, false);
-  }
+  flag = !reviewNameField.value;
+  controlVisible(reviewNameLabel, flag);
 
   //Поле "Отзыв" блока "Осталось заполнить"
-  if ((reviewTextField.value.length === 0) && (reviewMarkRadioValue < MIN_MARK_TEXT_REQUIRED)) {
-    controlVisible(reviewTextLabel, true);
-  } else {
-    controlVisible(reviewTextLabel, false);
-  }
+  flag = (!reviewTextField.value) && (reviewMarkRadioValue < MIN_MARK);
+  controlVisible(reviewTextLabel, flag);
 
   //Блок "Осталось заполнить"
-
-  if (controlVisible(reviewNameLabel) || controlVisible(reviewTextLabel)) {
-    controlVisible(reviewFieldsBlock, true);
-  } else {
-    controlVisible(reviewFieldsBlock, false);
-  }
+  flag = controlVisible(reviewNameLabel) || controlVisible(reviewTextLabel);
+  controlVisible(reviewFieldsBlock, flag);
 }
 
-// Если в функцию передать один параметр "elem", то функция вернёт true или false в зависимости видел ли данный элемент
-// Вторым параметров в функцию можно передать true или false, чтобы показать или скрыть элемент
+// Если в функцию передать один параметр "elem", то функция вернёт true или false в зависимости виден ли данный элемент
+// Вторым параметром в функцию можно передать true или false, чтобы показать или скрыть элемент
 function controlVisible(elem, flag) {
   var answer;
   if (typeof flag === 'undefined') {
