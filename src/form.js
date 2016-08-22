@@ -58,7 +58,6 @@ goValidate();
 
 function goValidate() {
   var MIN_NAME_LENGTH = 2;
-  var MIN_TEXT_LENGTH = 20;
   var MIN_MARK_TEXT_REQUIRED = 3;
 
   var reviewMarkRadioValue = document.querySelector('input[name="review-mark"]:checked').value;
@@ -68,32 +67,31 @@ function goValidate() {
   var reviewTextLabel = reviewFieldsBlock.querySelector('label[for="review-text"]');
 
   // Кнопка "Добавить отзыв"
-  if (((reviewMarkRadioValue < MIN_MARK_TEXT_REQUIRED) && (reviewNameField.textLength >= MIN_NAME_LENGTH) && (reviewTextField.textLength >= MIN_TEXT_LENGTH)) ||
-    ((reviewMarkRadioValue >= MIN_MARK_TEXT_REQUIRED) && (reviewNameField.textLength >= MIN_NAME_LENGTH))) {
+  if (((reviewMarkRadioValue < MIN_MARK_TEXT_REQUIRED) && (reviewNameField.value.length >= MIN_NAME_LENGTH) && (reviewTextField.value.length > 0)) ||
+    ((reviewMarkRadioValue >= MIN_MARK_TEXT_REQUIRED) && (reviewNameField.value.length >= MIN_NAME_LENGTH))) {
     reviewSubmitButton.removeAttribute('disabled');
   } else {
     reviewSubmitButton.setAttribute('disabled', '');
   }
 
-  //Поле "Имя"" блока "Осталось заполнить"
-  if (reviewNameField.textLength < MIN_NAME_LENGTH) {
-    reviewNameLabel.style.display = '';
+  //Поле "Имя" блока "Осталось заполнить"
+  if (reviewNameField.value.length < MIN_NAME_LENGTH) {
+    reviewNameLabel.classList.remove('invisible');
   } else {
-    reviewNameLabel.style.display = 'none';
+    reviewNameLabel.classList.add('invisible');
   }
 
-  //Блок "Отзыв" блока "Осталось заполнить"
-  if ((reviewTextField.textLength < MIN_TEXT_LENGTH) && (reviewMarkRadioValue < MIN_MARK_TEXT_REQUIRED)) {
-    reviewTextLabel.style.display = '';
+  //Поле "Отзыв" блока "Осталось заполнить"
+  if ((reviewTextField.value.length === 0) && (reviewMarkRadioValue < MIN_MARK_TEXT_REQUIRED)) {
+    reviewTextLabel.classList.remove('invisible');
   } else {
-    reviewTextLabel.style.display = 'none';
+    reviewTextLabel.classList.add('invisible');
   }
 
-  //Блок "Осталось заполнить". Способ проверки - решил выпендриться =)
-  if ((window.getComputedStyle(reviewNameLabel).display === 'none') && (window.getComputedStyle(reviewTextLabel).display === 'none')) {
-    reviewFieldsBlock.style.display = 'none';
+  //Блок "Осталось заполнить"
+  if (reviewNameLabel.classList.contains('invisible') && reviewTextLabel.classList.contains('invisible')) {
+    reviewFieldsBlock.classList.add('invisible');
   } else {
-    reviewFieldsBlock.style.display = '';
+    reviewFieldsBlock.classList.remove('invisible');
   }
-
 }
