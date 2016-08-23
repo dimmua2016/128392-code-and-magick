@@ -57,9 +57,8 @@ reviewFormGroupMark.onclick = (function(event) {
 goValidate();
 
 function goValidate() {
-  var MIN_NAME_LENGTH = 2;
-  var MIN_TEXT_LENGTH = 20;
-  var MIN_MARK_TEXT_REQUIRED = 3;
+  var MIN_MARK = 3;
+  var flag;
 
   var reviewMarkRadioValue = document.querySelector('input[name="review-mark"]:checked').value;
   var reviewSubmitButton = document.querySelector('.review-submit');
@@ -68,34 +67,44 @@ function goValidate() {
   var reviewTextLabel = reviewFieldsBlock.querySelector('label[for="review-text"]');
 
   // Кнопка "Добавить отзыв"
-  if (((reviewMarkRadioValue < MIN_MARK_TEXT_REQUIRED) && (reviewNameField.textLength >= MIN_NAME_LENGTH) && (reviewTextField.textLength >= MIN_TEXT_LENGTH)) ||
-    ((reviewMarkRadioValue >= MIN_MARK_TEXT_REQUIRED) && (reviewNameField.textLength >= MIN_NAME_LENGTH))) {
+  if (((reviewMarkRadioValue < MIN_MARK) && (reviewNameField.value) && (reviewTextField.value)) ||
+    ((reviewMarkRadioValue >= MIN_MARK) && (reviewNameField.value))) {
     reviewSubmitButton.removeAttribute('disabled');
   } else {
     reviewSubmitButton.setAttribute('disabled', '');
   }
 
-  //Поле "Имя"" блока "Осталось заполнить"
-  if (reviewNameField.textLength < MIN_NAME_LENGTH) {
-    reviewNameLabel.style.display = '';
-  } else {
-    reviewNameLabel.style.display = 'none';
-  }
+  //Поле "Имя" блока "Осталось заполнить"
+  flag = !reviewNameField.value;
+  controlVisible(reviewNameLabel, flag);
 
-  //Блок "Отзыв" блока "Осталось заполнить"
-  if ((reviewTextField.textLength < MIN_TEXT_LENGTH) && (reviewMarkRadioValue < MIN_MARK_TEXT_REQUIRED)) {
-    reviewTextLabel.style.display = '';
-  } else {
-    reviewTextLabel.style.display = 'none';
-  }
+  //Поле "Отзыв" блока "Осталось заполнить"
+  flag = (!reviewTextField.value) && (reviewMarkRadioValue < MIN_MARK);
+  controlVisible(reviewTextLabel, flag);
 
-  //Блок "Осталось заполнить". Способ проверки - решил выпендриться =)
-  if ((window.getComputedStyle(reviewNameLabel).display === 'none') && (window.getComputedStyle(reviewTextLabel).display === 'none')) {
-    reviewFieldsBlock.style.display = 'none';
-  } else {
-    reviewFieldsBlock.style.display = '';
-  }
+  //Блок "Осталось заполнить"
+  flag = controlVisible(reviewNameLabel) || controlVisible(reviewTextLabel);
+  controlVisible(reviewFieldsBlock, flag);
+}
 
+// Если в функцию передать один параметр "elem", то функция вернёт true или false в зависимости виден ли данный элемент
+// Вторым параметром в функцию можно передать true или false, чтобы показать или скрыть элемент
+function controlVisible(elem, flag) {
+  var answer;
+  if (typeof flag === 'undefined') {
+    if (window.getComputedStyle(elem).display !== 'none') {
+      answer = true;
+    } else {
+      answer = false;
+    }
+  } else {
+    if (flag) {
+      elem.classList.remove('invisible');
+    } else {
+      elem.classList.add('invisible');
+    }
+  }
+  return answer;
 }
 
 var cookies = require('browser-cookies');
