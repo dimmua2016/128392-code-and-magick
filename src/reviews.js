@@ -1,11 +1,6 @@
 'use strict';
 
-// Элемент "Популярные отзывы", надо же мне куда-то кликать, чтобы получить что-то
-var reviewsPopular = document.getElementById('reviews-popular');
-
-reviewsPopular.onclick = (function() {
-  createCallback('/api/reviews?callback=', 'showFeedback');
-});
+var reviews = [];
 
 function createCallback(url, name) {
   var script = document.createElement('script');
@@ -14,6 +9,8 @@ function createCallback(url, name) {
 }
 
 window.showFeedback = function(data) {
-  var reviewsList = document.querySelector('.reviews-list');
-  reviewsList.innerHTML = 'Мои отзывы: ' + data;
+  reviews = data;
+  console.log(reviews);
 };
+
+createCallback('/api/reviews?callback=', 'showFeedback');
