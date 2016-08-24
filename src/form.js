@@ -106,3 +106,39 @@ function controlVisible(elem, flag) {
   }
   return answer;
 }
+
+var cookies = require('browser-cookies');
+var reviewForm = document.querySelector('.review-form');
+var COOKIE_MARK = 'review-mark';
+var COOKIE_NAME = 'review-name';
+
+// Сохранить куки
+reviewForm.onsubmit = (function() {
+  var reviewMarkRadioValue = document.querySelector('input[name="review-mark"]:checked').value;
+  var expiresDate = {
+    expires: getExpirationDate()
+  };
+
+  cookies.set(COOKIE_MARK, reviewMarkRadioValue, expiresDate);
+  cookies.set(COOKIE_NAME, reviewNameField.value, expiresDate);
+});
+
+// Прочитать куки
+reviewNameField.value = cookies.get(COOKIE_NAME) || reviewNameField.value;
+if (cookies.get(COOKIE_MARK)) {
+  var reviewMarkRadio = document.getElementById('review-mark-' + cookies.get(COOKIE_MARK));
+  reviewMarkRadio.checked = true;
+}
+
+// Вычисление количества дней прошедших с последнего прошедшего дня рождения Грейс Хоппер
+function getExpirationDate() {
+  var MILLISECONDS_IN_ONE_DAY = 1000 * 60 * 60 * 24;
+  var currentDate = new Date();
+  var birthdayGraceHopper = new Date(currentDate.getFullYear(), 11, 9);
+
+  if (currentDate < birthdayGraceHopper) {
+    birthdayGraceHopper.setFullYear(currentDate.getFullYear() - 1);
+  }
+
+  return (currentDate - birthdayGraceHopper) / MILLISECONDS_IN_ONE_DAY;
+}
