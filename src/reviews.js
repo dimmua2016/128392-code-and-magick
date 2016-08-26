@@ -1,11 +1,12 @@
 'use strict';
+var utils = require('./utils');
 
 var reviews = [];
 var reviewFilter = document.querySelector('.reviews-filter');
 var reviewTemplate = document.getElementById('review-template');
 var elementToClone;
 
-reviewFilter.classList.add('invisible');
+utils.controlVisible(reviewFilter, false);
 
 if ('content' in reviewTemplate) {
   elementToClone = reviewTemplate.content.querySelector('.review');
@@ -25,6 +26,7 @@ window.getFeedback = function(data) {
   reviews.forEach(function(review) {
     showFeedback(review, reviewsList);
   });
+  utils.controlVisible(reviewFilter, true);
 };
 
 function showFeedback(review, container) {
@@ -61,4 +63,3 @@ function showFeedback(review, container) {
 }
 
 createCallback('/api/reviews?callback=', 'getFeedback');
-reviewFilter.classList.remove('invisible');

@@ -1,4 +1,5 @@
 'use strict';
+var utils = require('./utils');
 
 window.form = (function() {
   var formContainer = document.querySelector('.overlay-container');
@@ -53,9 +54,6 @@ reviewFormGroupMark.onclick = (function(event) {
   }
 });
 
-//Вызываю функцию, чтобы установить начальные значения
-goValidate();
-
 function goValidate() {
   var MIN_MARK = 3;
   var flag;
@@ -76,35 +74,15 @@ function goValidate() {
 
   //Поле "Имя" блока "Осталось заполнить"
   flag = !reviewNameField.value;
-  controlVisible(reviewNameLabel, flag);
+  utils.controlVisible(reviewNameLabel, flag);
 
   //Поле "Отзыв" блока "Осталось заполнить"
   flag = (!reviewTextField.value) && (reviewMarkRadioValue < MIN_MARK);
-  controlVisible(reviewTextLabel, flag);
+  utils.controlVisible(reviewTextLabel, flag);
 
   //Блок "Осталось заполнить"
-  flag = controlVisible(reviewNameLabel) || controlVisible(reviewTextLabel);
-  controlVisible(reviewFieldsBlock, flag);
-}
-
-// Если в функцию передать один параметр "elem", то функция вернёт true или false в зависимости виден ли данный элемент
-// Вторым параметром в функцию можно передать true или false, чтобы показать или скрыть элемент
-function controlVisible(elem, flag) {
-  var answer;
-  if (typeof flag === 'undefined') {
-    if (window.getComputedStyle(elem).display !== 'none') {
-      answer = true;
-    } else {
-      answer = false;
-    }
-  } else {
-    if (flag) {
-      elem.classList.remove('invisible');
-    } else {
-      elem.classList.add('invisible');
-    }
-  }
-  return answer;
+  flag = utils.controlVisible(reviewNameLabel) || utils.controlVisible(reviewTextLabel);
+  utils.controlVisible(reviewFieldsBlock, flag);
 }
 
 var cookies = require('browser-cookies');
@@ -142,3 +120,6 @@ function getExpirationDate() {
 
   return (currentDate - birthdayGraceHopper) / MILLISECONDS_IN_ONE_DAY;
 }
+
+//Вызываю функцию, чтобы установить начальные значения
+goValidate();
