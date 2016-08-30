@@ -1,6 +1,6 @@
 'use strict';
 
-define(['utils', 'review', 'load'], function(utils, review, load) {
+define(['./utils', './review', './load'], function(utils, review, load) {
 
   var reviewFilter = document.querySelector('.reviews-filter');
   utils(reviewFilter, false);

@@ -1,6 +1,7 @@
 'use strict';
 
 define(function() {
+
   var reviewTemplate = document.getElementById('review-template');
   var elementToClone;
 

@@ -1,6 +1,6 @@
 'use strict';
 
-define(['utils'], function(utils) {
+define(['./utils', 'browser-cookies'], function(utils, cookies) {
 
   window.form = (function() {
     var formContainer = document.querySelector('.overlay-container');
@@ -25,7 +25,6 @@ define(['utils'], function(utils) {
         }
       }
     };
-
 
     formCloseButton.onclick = function(evt) {
       evt.preventDefault();
@@ -75,18 +74,17 @@ define(['utils'], function(utils) {
 
     //Поле "Имя" блока "Осталось заполнить"
     flag = !reviewNameField.value;
-    utils(reviewNameLabel, flag);
+    utils.controlVisible(reviewNameLabel, flag);
 
     //Поле "Отзыв" блока "Осталось заполнить"
     flag = (!reviewTextField.value) && (reviewMarkRadioValue < MIN_MARK);
-    utils(reviewTextLabel, flag);
+    utils.controlVisible(reviewTextLabel, flag);
 
     //Блок "Осталось заполнить"
-    flag = utils(reviewNameLabel) || utils(reviewTextLabel);
-    utils(reviewFieldsBlock, flag);
+    flag = utils.controlVisible(reviewNameLabel) || utils.controlVisible(reviewTextLabel);
+    utils.controlVisible(reviewFieldsBlock, flag);
   }
 
-  var cookies = require('browser-cookies');
   var reviewForm = document.querySelector('.review-form');
   var COOKIE_MARK = 'review-mark';
   var COOKIE_NAME = 'review-name';
