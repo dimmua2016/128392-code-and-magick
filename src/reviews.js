@@ -3,7 +3,7 @@
 define(['./utils', './review', './load'], function(utils, review, load) {
 
   var reviewFilter = document.querySelector('.reviews-filter');
-  utils(reviewFilter, false);
+  utils.controlVisible(reviewFilter, false);
 
   window.getFeedback = function(data) {
     var reviewsList = document.querySelector('.reviews-list');
@@ -11,7 +11,7 @@ define(['./utils', './review', './load'], function(utils, review, load) {
     reviews.forEach(function(reviewParam) {
       review(reviewParam, reviewsList);
     });
-    utils(reviewFilter, true);
+    utils.controlVisible(reviewFilter, true);
   };
 
   load('/api/reviews?callback=', 'getFeedback');
