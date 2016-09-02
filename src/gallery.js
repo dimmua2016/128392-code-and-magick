@@ -1,6 +1,6 @@
 'use strict';
-// не могу воспользоваться функцией из модуля utils
-define(['./utils'], function() {
+
+define(['./utils'], function(utils) {
 
   var Gallery = function(data) {
     this.pictures = data;
@@ -30,28 +30,26 @@ define(['./utils'], function() {
     };
 
     this.setActivePicture(n);
-    this.overlayGallery.classList.remove('invisible');
+    utils.controlVisible(this.overlayGallery, true);
   };
 
   Gallery.prototype.prev = function() {
     if (this.activePicture !== 0) {
       this.setActivePicture(this.activePicture - 1);
     }
-    console.log(this.activePicture);
   };
 
   Gallery.prototype.next = function() {
     if (this.activePicture !== this.pictures.length - 1) {
       this.setActivePicture(this.activePicture + 1);
     }
-    console.log(this.activePicture);
   };
 
   Gallery.prototype.hide = function() {
     this.overlayGalleryClose.onclick = null;
     this.overlayGalleryControlLeft.onclick = null;
     this.overlayGalleryControlRight.onclick = null;
-    this.overlayGallery.classList.add('invisible');
+    utils.controlVisible(this.overlayGallery, false);
   };
 
   Gallery.prototype.setActivePicture = function(n) {

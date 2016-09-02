@@ -25,45 +25,16 @@ define(['./form', './game', './gallery', './reviews'], function(form, Game, Gall
   var galleryImgAll = document.querySelectorAll('.photogallery .photogallery-image img');
   var galleryLinkAll = document.querySelectorAll('.photogallery .photogallery-image');
 
-  var i;
-  var length = galleryImgAll.length;
-  var galleryImgSrc = [];
-  // Как это сделать проще?
-  // По сути, мне из Nodelist нужно вытащить свойства src и запихнуть в массив.
-  for (i = 0; i < length; i++) {
-    galleryImgSrc[i] = galleryImgAll[i].src;
-  }
+  var galleryImgSrc = Array.prototype.map.call(galleryImgAll, function(img) {
+    return img.src;
+  });
 
   var gallery = new Gallery(galleryImgSrc);
 
-  length = galleryLinkAll.length;
-  // Как это сделать проще?
-  // Мне пришлось обернуть это все функцией и сразу её выполнить, чтобы сохранить текущее значение переменной i
-  for (i = 0; i < length; i++) {
-    (function(k) {
-      galleryLinkAll[i].addEventListener('click', function() {
-        gallery.show(k);
-        console.log(gallery);
-      });
-    })(i);
-  }
-
-  // Для примера, такое видел в чужом коде:
-  // Вроде этот код мне понятен, хотя зачем делать "call"?
-  // Без него не работает, а этот "call" в инструкциях не описывается
-  // var galleryImg = document.querySelectorAll('.photogallery .photogallery-image img');
-  // var galleryLink = document.querySelectorAll('.photogallery .photogallery-image');
-
-  // var picture = Array.prototype.map.call(galleryImg, function(img) {
-  //   return img.src;
-  // });
-
-  // var gallery = new Gallery(picture);
-
-  // Array.prototype.forEach.call(galleryLink, function(link, i) {
-  //   link.addEventListener('click', function() {
-  //     gallery.show(i);
-  //   });
-  // });
+  Array.prototype.forEach.call(galleryLinkAll, function(link, i) {
+    link.addEventListener('click', function() {
+      gallery.show(i);
+    });
+  });
 
 });
