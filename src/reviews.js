@@ -18,5 +18,4 @@ define(['./utils', './review', './load'], function(utils, Review, load) {
   };
 
   load('/api/reviews?callback=', 'getFeedback');
-
 });

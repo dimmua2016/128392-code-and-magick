@@ -81,5 +81,4 @@ define(function() {
   });
 
   return Review;
-
 });
