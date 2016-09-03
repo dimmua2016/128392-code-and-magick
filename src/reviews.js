@@ -1,15 +1,19 @@
 'use strict';
 
-define(['./utils', './review', './load'], function(utils, review, load) {
+define(['./utils', './review', './load'], function(utils, Review, load) {
 
   var reviewFilter = document.querySelector('.reviews-filter');
   utils.controlVisible(reviewFilter, false);
 
-  window.getFeedback = function(data) {
+  window.getFeedback = function(reviews) {
     var reviewsList = document.querySelector('.reviews-list');
-    data.forEach(function(reviewParam) {
-      review(reviewParam, reviewsList);
+    var fragment = document.createDocumentFragment();
+    reviews.forEach(function(review) {
+      fragment.appendChild(new Review(review).element);
     });
+
+    reviewsList.appendChild(fragment);
+
     utils.controlVisible(reviewFilter, true);
   };
 

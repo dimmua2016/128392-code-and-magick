@@ -1,9 +1,7 @@
 'use strict';
-require('./form');
-require('./game');
-require('./reviews');
 
-(function() {
+define(['./form', './game', './gallery', './reviews'], function(form, Game, Gallery) {
+
   var game = new window.Game(document.querySelector('.demo'));
   game.initializeLevelAndStart();
   game.setGameStatus(window.Game.Verdict.INTRO);
@@ -23,4 +21,20 @@ require('./reviews');
   window.form.onClose = function() {
     game.setDeactivated(false);
   };
-})();
+
+  var galleryImgAll = document.querySelectorAll('.photogallery .photogallery-image img');
+  var galleryLinkAll = document.querySelectorAll('.photogallery .photogallery-image');
+
+  var galleryImgSrc = Array.prototype.map.call(galleryImgAll, function(img) {
+    return img.src;
+  });
+
+  var gallery = new Gallery(galleryImgSrc);
+
+  Array.prototype.forEach.call(galleryLinkAll, function(link, i) {
+    link.addEventListener('click', function() {
+      gallery.show(i);
+    });
+  });
+
+});
