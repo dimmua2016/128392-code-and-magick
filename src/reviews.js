@@ -1,6 +1,6 @@
 'use strict';
 
-define(['./utils', './review', './load'], function(utils, Review, load) {
+define(['./utils', './Review', './load'], function(utils, Review, load) {
 
   var reviewFilter = document.querySelector('.reviews-filter');
   utils.controlVisible(reviewFilter, false);
@@ -18,5 +18,4 @@ define(['./utils', './review', './load'], function(utils, Review, load) {
   };
 
   load('/api/reviews?callback=', 'getFeedback');
-
 });
