@@ -50,7 +50,7 @@ define(function() {
   });
 
   Review.prototype.setUsefulness = (function(i) {
-    this.element.querySelector('.review-quiz').childNodes[2].textContent = (i > 0 ? '(+' : '(') + i + ')';
+    this.element.querySelector('.review-quiz-usefulness').textContent = (i > 0 ? '(+' : '(') + i + ')';
   });
 
   Review.prototype.remove = (function() {
