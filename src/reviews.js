@@ -10,7 +10,7 @@ define(['./utils', './Review', './load'], function(utils, Review, load) {
     loadReviews(pageNumber++);
   });
 
-  reviewFilter.addEventListener('click', function(evt) {
+  reviewFilter.addEventListener('change', function(evt) {
     if ((evt.target.type === 'radio') && (evt.target.name === 'reviews')) {
       pageNumber = 0;
       reviewsList.innerHTML = '';

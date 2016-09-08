@@ -2,14 +2,39 @@
 
 define(function() {
   return function(url, params, callback) {
+    var TIMEOUT = 5000;
     var xhr = new XMLHttpRequest();
 
-    xhr.onload = function(evt) {
-      var loadedData = JSON.parse(evt.target.response);
-      callback(loadedData);
+    var request = url +
+      '?from=' + (params.from || 0) +
+      '&to=' + (params.to || Infinity) +
+      '&filter=' + (params.filter || 'default');
+
+    xhr.timeout = TIMEOUT;
+
+    xhr.ontimeout = function() {
+      console.warn('Запрос превысил максимальное время ' + TIMEOUT + 'мс, url: ' + request);
     };
 
-    xhr.open('GET', url + '?from=' + params.from + '&to=' + params.to + '&filter=' + params.filter);
+    xhr.onerror = function() {
+      console.warn('Ответ сервера: ' + xhr.status + ', Текст ошибки: ' + xhr.statusText + ', url: ' + request);
+    };
+
+    xhr.onload = function(evt) {
+      var responseData = evt.target;
+      if (responseData.readyState === 4 && responseData.status === 200) {
+        try {
+          var loadedData = JSON.parse(responseData.response);
+          callback(loadedData);
+        } catch (err) {
+          console.warn('Ошибка парсинга данных: ' + err.message);
+        }
+      } else {
+        xhr.onerror();
+      }
+    };
+
+    xhr.open('GET', request);
     xhr.send();
   };
 });
