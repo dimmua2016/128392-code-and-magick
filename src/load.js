@@ -6,9 +6,9 @@ define(function() {
     var xhr = new XMLHttpRequest();
 
     var request = url +
-      '?from=' + (params.from || 0) +
-      '&to=' + (params.to || Infinity) +
-      '&filter=' + (params.filter || 'default');
+      '?from=' + params.from +
+      '&to=' + params.to +
+      '&filter=' + params.filter;
 
     xhr.timeout = TIMEOUT;
 
