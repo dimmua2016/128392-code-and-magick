@@ -35,6 +35,9 @@ module.exports = function(list, filterID) {
       return list.sort(function(a, b) {
         return b.review_usefulness - a.review_usefulness;
       });
+
+    case 'reviews-all':
+      return list;
   }
   return list;
 };
