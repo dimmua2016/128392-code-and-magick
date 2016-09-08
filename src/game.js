@@ -250,7 +250,6 @@ window.Game = (function() {
   var headerClouds = document.querySelector('.header-clouds');
   var demo = document.querySelector('.demo');
   var lastCheck = Date.now();
-  headerClouds.style.transition = 'all ' + THROTTLE_TIMEOUT + 'ms linear';
 
   var Game = function(container) {
     this.container = container;
@@ -277,14 +276,14 @@ window.Game = (function() {
     level: INITIAL_LEVEL,
 
     _onScroll: function() {
-      if (Date.now() - lastCheck >= THROTTLE_TIMEOUT) {
-        var currentScroll = window.pageYOffset;
-        var demoBottom = demo.getBoundingClientRect().bottom;
-        var headerCloudsBottom = headerClouds.getBoundingClientRect().bottom;
+      var currentScroll = window.pageYOffset;
+      var headerCloudsBottom = headerClouds.getBoundingClientRect().bottom;
+      if (headerCloudsBottom > 0) {
+        headerClouds.style.backgroundPosition = (50 - currentScroll * CLOUDS_SPEED) + '% 0';
+      }
 
-        if (headerCloudsBottom > 0) {
-          headerClouds.style.backgroundPosition = (50 - currentScroll * CLOUDS_SPEED) + '% 0';
-        }
+      if (Date.now() - lastCheck >= THROTTLE_TIMEOUT) {
+        var demoBottom = demo.getBoundingClientRect().bottom;
         if (demoBottom <= 0) {
           this.setGameStatus(Verdict.PAUSE);
         }
@@ -810,7 +809,7 @@ window.Game = (function() {
     _removeGameListeners: function() {
       window.removeEventListener('keydown', this._onKeyDown);
       window.removeEventListener('keyup', this._onKeyUp);
-      window.removeEventListener('scroll', this._onScroll);
+      //window.removeEventListener('scroll', this._onScroll);
     }
   };
 
