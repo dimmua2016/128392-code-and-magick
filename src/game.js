@@ -244,6 +244,13 @@ window.Game = (function() {
    * @param {Element} container
    * @constructor
    */
+
+  var THROTTLE_TIMEOUT = 100;
+  var CLOUDS_SPEED = 0.2;
+  var headerClouds = document.querySelector('.header-clouds');
+  var demo = document.querySelector('.demo');
+  var lastCheck = Date.now();
+
   var Game = function(container) {
     this.container = container;
     this.canvas = document.createElement('canvas');
@@ -256,6 +263,7 @@ window.Game = (function() {
     this._onKeyDown = this._onKeyDown.bind(this);
     this._onKeyUp = this._onKeyUp.bind(this);
     this._pauseListener = this._pauseListener.bind(this);
+    this._onScroll = this._onScroll.bind(this);
 
     this.setDeactivated(false);
   };
@@ -266,6 +274,22 @@ window.Game = (function() {
      * @type {Level}
      */
     level: INITIAL_LEVEL,
+
+    _onScroll: function() {
+      var currentScroll = window.pageYOffset;
+      var headerCloudsBottom = headerClouds.getBoundingClientRect().bottom;
+      if (headerCloudsBottom > 0) {
+        headerClouds.style.backgroundPosition = (50 - currentScroll * CLOUDS_SPEED) + '% 0';
+      }
+
+      if (Date.now() - lastCheck >= THROTTLE_TIMEOUT) {
+        var demoBottom = demo.getBoundingClientRect().bottom;
+        if (demoBottom <= 0) {
+          this.setGameStatus(Verdict.PAUSE);
+        }
+        lastCheck = Date.now();
+      }
+    },
 
     /** @param {boolean} deactivated */
     setDeactivated: function(deactivated) {
@@ -778,12 +802,14 @@ window.Game = (function() {
     _initializeGameListeners: function() {
       window.addEventListener('keydown', this._onKeyDown);
       window.addEventListener('keyup', this._onKeyUp);
+      window.addEventListener('scroll', this._onScroll);
     },
 
     /** @private */
     _removeGameListeners: function() {
       window.removeEventListener('keydown', this._onKeyDown);
       window.removeEventListener('keyup', this._onKeyUp);
+      //window.removeEventListener('scroll', this._onScroll);
     }
   };
 
