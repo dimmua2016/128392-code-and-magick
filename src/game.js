@@ -238,7 +238,10 @@ window.Game = (function() {
     return state;
   };
 
+  var THROTTLE_TIMEOUT = 100;
+  var CLOUDS_SPEED = 0.2;
   var headerClouds = document.querySelector('.header-clouds');
+  var demo = document.querySelector('.demo');
 
   var moveClouds = function() {
     var currentScroll = window.pageYOffset;
@@ -248,24 +251,22 @@ window.Game = (function() {
     }
   };
 
-  var THROTTLE_TIMEOUT = 100;
-  var CLOUDS_SPEED = 0.2;
-  var demo = document.querySelector('.demo');
-  var lastCheck = Date.now();
-
   var throttle = function(func, delay) {
-    if (Date.now() - lastCheck >= delay) {
-      return func;
-    }
-    lastCheck = Date.now();
-    console.log('текст'); // почему эта выводиться в консоль, хотя вызов функции я законментировал! 
+    var lastCheck = Date.now();
+    return function() {
+      console.log('срабатывает при каждом скроле');
+      if (Date.now() - lastCheck >= delay) {
+        func();
+      }
+      lastCheck = Date.now();
+    };
   };
 
   var optimizedScroll = throttle(function() {
+    console.log('оптимизированная функция');
     var demoBottom = demo.getBoundingClientRect().bottom;
-    if (demoBottom <= 0) { // надо добавить проверку "и мы еще не на паузе"
-      //window.Game.setStatus(window.Game.Verdict.PAUSE); - пишет нет такой фукнции. Без понятия что делать
-      console.log('поставить на паузу');
+    if (demoBottom <= 0) { // и еще надо добавить проверку, что мы уже на паузе
+      //window.Game.setStatus(window.Game.Verdict.PAUSE); // пишет не такой функци
     }
   }, THROTTLE_TIMEOUT);
 
@@ -810,8 +811,8 @@ window.Game = (function() {
     _initializeGameListeners: function() {
       window.addEventListener('keydown', this._onKeyDown);
       window.addEventListener('keyup', this._onKeyUp);
-      //window.addEventListener('scroll', optimizedScroll);
-      //window.addEventListener('scroll', moveClouds);
+      window.addEventListener('scroll', optimizedScroll);
+      window.addEventListener('scroll', moveClouds);
     },
 
     /** @private */
