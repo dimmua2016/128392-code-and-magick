@@ -251,7 +251,6 @@ define(['./utils'], function(utils) {
     var CLOUDS_SPEED = 0.2;
     var headerClouds = document.querySelector('.header-clouds');
     var demo = document.querySelector('.demo');
-    //var lastCheck = Date.now();
 
     var Game = function(container) {
       this.container = container;
@@ -265,46 +264,33 @@ define(['./utils'], function(utils) {
       this._onKeyDown = this._onKeyDown.bind(this);
       this._onKeyUp = this._onKeyUp.bind(this);
       this._pauseListener = this._pauseListener.bind(this);
-      //this._onScroll = this._onScroll.bind(this);
 
       this.setDeactivated(false);
+      this.optimizePauseWhenInvisible = utils.throttle(this._pauseWhenInvisible.bind(this), THROTTLE_TIMEOUT);
     };
 
     Game.prototype = {
-      /**
-       * Текущий уровень игры.
-       * @type {Level}
-       */
-      level: INITIAL_LEVEL,
 
-      _onScroll: function() {
+      _moveClouds: function() {
         var currentScroll = window.pageYOffset;
         var headerCloudsBottom = headerClouds.getBoundingClientRect().bottom;
         if (headerCloudsBottom > 0) {
           headerClouds.style.backgroundPosition = (50 - currentScroll * CLOUDS_SPEED) + '% 0';
         }
-
-        utils.throttle((function() {
-          var demoBottom = demo.getBoundingClientRect().bottom;
-          if (demoBottom <= 0) {
-            this.setGameStatus(Verdict.PAUSE);
-          }
-        }), THROTTLE_TIMEOUT).bind(this)();
-
-        // Это рабочий вариант. Чтобы он заработал нужно закометить вызов функции utils.throttle (строки 287-292),
-        // а также раскоментировать lastCheck выше по коду (строка 268)
-        // (function() {
-        //   console.log('каждый скролл');
-        //   if (Date.now() - lastCheck >= THROTTLE_TIMEOUT) {
-        //     var demoBottom = demo.getBoundingClientRect().bottom;
-        //     if (demoBottom <= 0) {
-        //       this.setGameStatus(Verdict.PAUSE);
-        //     }
-        //     lastCheck = Date.now();
-        //     console.log('троттлинг');
-        //   }
-        // }).bind(this)();
       },
+
+      _pauseWhenInvisible: function() {
+        var demoBottom = demo.getBoundingClientRect().bottom;
+        if ((demoBottom <= 0) && (this.state.currentStatus !== Game.Verdict.PAUSE)) {
+          this.setGameStatus(Verdict.PAUSE);
+        }
+      },
+
+      /**
+       * Текущий уровень игры.
+       * @type {Level}
+       */
+      level: INITIAL_LEVEL,
 
       /** @param {boolean} deactivated */
       setDeactivated: function(deactivated) {
@@ -817,14 +803,14 @@ define(['./utils'], function(utils) {
       _initializeGameListeners: function() {
         window.addEventListener('keydown', this._onKeyDown);
         window.addEventListener('keyup', this._onKeyUp);
-        window.addEventListener('scroll', this._onScroll);
+        window.addEventListener('scroll', this.optimizePauseWhenInvisible);
+        window.addEventListener('scroll', this._moveClouds);
       },
 
       /** @private */
       _removeGameListeners: function() {
         window.removeEventListener('keydown', this._onKeyDown);
         window.removeEventListener('keyup', this._onKeyUp);
-        //window.removeEventListener('scroll', this._onScroll);
       }
     };
 
