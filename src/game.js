@@ -251,7 +251,7 @@ define(['./utils'], function(utils) {
     var CLOUDS_SPEED = 0.2;
     var headerClouds = document.querySelector('.header-clouds');
     var demo = document.querySelector('.demo');
-    var lastCheck = Date.now();
+    //var lastCheck = Date.now();
 
     var Game = function(container) {
       this.container = container;
@@ -265,7 +265,7 @@ define(['./utils'], function(utils) {
       this._onKeyDown = this._onKeyDown.bind(this);
       this._onKeyUp = this._onKeyUp.bind(this);
       this._pauseListener = this._pauseListener.bind(this);
-      this._onScroll = this._onScroll.bind(this);
+      //this._onScroll = this._onScroll.bind(this);
 
       this.setDeactivated(false);
     };
@@ -284,13 +284,26 @@ define(['./utils'], function(utils) {
           headerClouds.style.backgroundPosition = (50 - currentScroll * CLOUDS_SPEED) + '% 0';
         }
 
-        if (Date.now() - lastCheck >= THROTTLE_TIMEOUT) {
+        utils.throttle((function() {
           var demoBottom = demo.getBoundingClientRect().bottom;
           if (demoBottom <= 0) {
             this.setGameStatus(Verdict.PAUSE);
           }
-          lastCheck = Date.now();
-        }
+        }), THROTTLE_TIMEOUT).bind(this)();
+
+        // Это рабочий вариант. Чтобы он заработал нужно закометить вызов функции utils.throttle (строки 287-292),
+        // а также раскоментировать lastCheck выше по коду (строка 268)
+        // (function() {
+        //   console.log('каждый скролл');
+        //   if (Date.now() - lastCheck >= THROTTLE_TIMEOUT) {
+        //     var demoBottom = demo.getBoundingClientRect().bottom;
+        //     if (demoBottom <= 0) {
+        //       this.setGameStatus(Verdict.PAUSE);
+        //     }
+        //     lastCheck = Date.now();
+        //     console.log('троттлинг');
+        //   }
+        // }).bind(this)();
       },
 
       /** @param {boolean} deactivated */

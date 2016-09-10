@@ -20,15 +20,15 @@ define(function() {
         }
       }
       return answer;
-    },
+    },    
     throttle: function(func, delay) {
       var lastCheck = Date.now();
       return function() {
-        console.log('срабатывает при каждом скроле');
+        console.log('Date.now() - lastCheck = ' + (Date.now() - lastCheck) + ' ms. Так быть не должно!');
         if (Date.now() - lastCheck >= delay) {
           func();
-        }
-        lastCheck = Date.now();
+          lastCheck = Date.now();
+        }        
       };
     }
   };
