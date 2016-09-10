@@ -273,16 +273,21 @@ define(['./utils'], function(utils) {
 
       _moveClouds: function() {
         var currentScroll = window.pageYOffset;
-        var headerCloudsBottom = headerClouds.getBoundingClientRect().bottom;
-        if (headerCloudsBottom > 0) {
-          headerClouds.style.backgroundPosition = (50 - currentScroll * CLOUDS_SPEED) + '% 0';
-        }
+        headerClouds.style.backgroundPosition = (50 - currentScroll * CLOUDS_SPEED) + '% 0';
       },
 
       _pauseWhenInvisible: function() {
         var demoBottom = demo.getBoundingClientRect().bottom;
+        var headerCloudsBottom = headerClouds.getBoundingClientRect().bottom;
+
         if ((demoBottom <= 0) && (this.state.currentStatus !== Game.Verdict.PAUSE)) {
           this.setGameStatus(Verdict.PAUSE);
+        }
+
+        if (headerCloudsBottom > 0) {
+          window.addEventListener('scroll', this._moveClouds);
+        } else {
+          window.removeEventListener('scroll', this._moveClouds);
         }
       },
 
@@ -804,7 +809,6 @@ define(['./utils'], function(utils) {
         window.addEventListener('keydown', this._onKeyDown);
         window.addEventListener('keyup', this._onKeyUp);
         window.addEventListener('scroll', this.optimizePauseWhenInvisible);
-        window.addEventListener('scroll', this._moveClouds);
       },
 
       /** @private */
