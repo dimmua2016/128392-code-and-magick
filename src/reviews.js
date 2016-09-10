@@ -6,6 +6,7 @@ define(['./utils', './Review', './load'], function(utils, Review, load) {
   var reviewsList = document.querySelector('.reviews-list');
   var pageNumber = 0;
   var DEFAULT_FILTER = 'reviews-all';
+  var LOCAL_STORAGE_REVIEWS_FILTER = 'reviewFilter';
   var activeFilter;
 
   addReview.addEventListener('click', function() {
@@ -17,7 +18,7 @@ define(['./utils', './Review', './load'], function(utils, Review, load) {
       pageNumber = 0;
       reviewsList.innerHTML = '';
       activeFilter = evt.target.value;
-      localStorage.setItem('reviewFilter', activeFilter);
+      localStorage.setItem(LOCAL_STORAGE_REVIEWS_FILTER, activeFilter);
       loadReviews(pageNumber++);
     }
   }, true);
@@ -39,8 +40,8 @@ define(['./utils', './Review', './load'], function(utils, Review, load) {
   };
 
   function setDefaultFilter() {
-    if (localStorage.getItem('reviewFilter')) {
-      activeFilter = localStorage.getItem('reviewFilter');
+    if (localStorage.getItem(LOCAL_STORAGE_REVIEWS_FILTER)) {
+      activeFilter = localStorage.getItem(LOCAL_STORAGE_REVIEWS_FILTER);
     } else {
       activeFilter = DEFAULT_FILTER;
     }
