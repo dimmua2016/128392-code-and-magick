@@ -5,6 +5,9 @@ define(['./utils', './Review', './load'], function(utils, Review, load) {
   var addReview = document.querySelector('.reviews-controls-more');
   var reviewsList = document.querySelector('.reviews-list');
   var pageNumber = 0;
+  var DEFAULT_FILTER = 'reviews-all';
+  var LOCAL_STORAGE_REVIEWS_FILTER = 'reviewFilter';
+  var activeFilter;
 
   addReview.addEventListener('click', function() {
     loadReviews(pageNumber++);
@@ -14,6 +17,8 @@ define(['./utils', './Review', './load'], function(utils, Review, load) {
     if ((evt.target.type === 'radio') && (evt.target.name === 'reviews')) {
       pageNumber = 0;
       reviewsList.innerHTML = '';
+      activeFilter = evt.target.value;
+      localStorage.setItem(LOCAL_STORAGE_REVIEWS_FILTER, activeFilter);
       loadReviews(pageNumber++);
     }
   }, true);
@@ -34,20 +39,29 @@ define(['./utils', './Review', './load'], function(utils, Review, load) {
     }
   };
 
+  function setDefaultFilter() {
+    if (localStorage.getItem(LOCAL_STORAGE_REVIEWS_FILTER)) {
+      activeFilter = localStorage.getItem(LOCAL_STORAGE_REVIEWS_FILTER);
+    } else {
+      activeFilter = DEFAULT_FILTER;
+    }
+    document.getElementById(activeFilter).checked = true;
+  }
+
   function loadReviews(currentPage) {
     var REVIEWS_LOAD_URL = '/api/reviews';
     var PAGE_SIZE = 3;
 
     var from = currentPage * PAGE_SIZE;
     var to = from + PAGE_SIZE;
-    var filter = document.querySelector('input[name="reviews"]:checked').value;
 
     load(REVIEWS_LOAD_URL, {
       from: from,
       to: to,
-      filter: filter
+      filter: activeFilter
     },
       window.getFeedback);
   }
+  setDefaultFilter();
   loadReviews(pageNumber++);
 });
