@@ -20,6 +20,16 @@ define(function() {
         }
       }
       return answer;
+    },
+    throttle: function(func, delay) {
+      var lastCheck = Date.now();
+      return function() {
+        console.log('срабатывает при каждом скроле');
+        if (Date.now() - lastCheck >= delay) {
+          func();
+        }
+        lastCheck = Date.now();
+      };
     }
   };
 });
