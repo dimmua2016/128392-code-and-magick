@@ -20,6 +20,15 @@ define(function() {
         }
       }
       return answer;
+    },
+    throttle: function(func, delay) {
+      var lastCheck = Date.now();
+      return function() {
+        if (Date.now() - lastCheck >= delay) {
+          func();
+          lastCheck = Date.now();
+        }
+      };
     }
   };
 });
