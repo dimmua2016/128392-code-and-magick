@@ -13,22 +13,16 @@ define(['./utils'], function(utils) {
     this.previewNumberCurrent = this.overlayGallery.querySelector('.preview-number-current');
     this.previewNumberTotal = this.overlayGallery.querySelector('.preview-number-total');
     this.previewNumberTotal.textContent = this.pictures.length;
+
+    this.hide = this.hide.bind(this);
+    this.prev = this.prev.bind(this);
+    this.next = this.next.bind(this);
   };
 
   Gallery.prototype.show = function(n) {
-    var self = this;
-
-    this.overlayGalleryClose.onclick = function() {
-      self.hide();
-    };
-
-    this.overlayGalleryControlLeft.onclick = function() {
-      self.prev();
-    };
-    this.overlayGalleryControlRight.onclick = function() {
-      self.next();
-    };
-
+    this.overlayGalleryClose.addEventListener('click', this.hide);
+    this.overlayGalleryControlLeft.addEventListener('click', this.prev);
+    this.overlayGalleryControlRight.addEventListener('click', this.next);
     this.setActivePicture(n);
     utils.controlVisible(this.overlayGallery, true);
   };
@@ -46,9 +40,9 @@ define(['./utils'], function(utils) {
   };
 
   Gallery.prototype.hide = function() {
-    this.overlayGalleryClose.onclick = null;
-    this.overlayGalleryControlLeft.onclick = null;
-    this.overlayGalleryControlRight.onclick = null;
+    this.overlayGalleryClose.removeEventListener('click', this.hide);
+    this.overlayGalleryControlLeft.removeEventListener('click', this.prev);
+    this.overlayGalleryControlRight.removeEventListener('click', this.next);
     utils.controlVisible(this.overlayGallery, false);
   };
 
