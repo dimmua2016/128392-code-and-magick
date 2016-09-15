@@ -17,21 +17,19 @@ define(['./utils'], function(utils) {
     this.hide = this.hide.bind(this);
     this.prev = this.prev.bind(this);
     this.next = this.next.bind(this);
+    this.closeGallery = this.closeGallery.bind(this);
 
-    this.setLocation = this.setLocation.bind(this);
     window.addEventListener('hashchange', this.hashchange.bind(this));
 
     this.hashchange();
   };
 
   Gallery.prototype.show = function(hash) {
-    console.log('show hash = ' + hash);
-    this.overlayGalleryClose.addEventListener('click', this.setLocation);
+    this.overlayGalleryClose.addEventListener('click', this.closeGallery);
     this.overlayGalleryControlLeft.addEventListener('click', this.prev);
     this.overlayGalleryControlRight.addEventListener('click', this.next);
-    this.setActivePicture(hash);
     utils.controlVisible(this.overlayGallery, true);
-
+    this.setActivePicture(hash);
   };
 
   Gallery.prototype.prev = function() {
@@ -47,11 +45,14 @@ define(['./utils'], function(utils) {
   };
 
   Gallery.prototype.hide = function() {
-    console.log('hide');
-    this.overlayGalleryClose.removeEventListener('click', this.setLocation);
+    this.overlayGalleryClose.removeEventListener('click', this.closeGallery);
     this.overlayGalleryControlLeft.removeEventListener('click', this.prev);
     this.overlayGalleryControlRight.removeEventListener('click', this.next);
     utils.controlVisible(this.overlayGallery, false);
+  };
+
+  Gallery.prototype.closeGallery = function() {
+    this.setLocation();
   };
 
   Gallery.prototype.setActivePicture = function(path) {
@@ -59,8 +60,6 @@ define(['./utils'], function(utils) {
     if (typeof path === 'string') {
       path = this.pictures.indexOf(path);
     }
-
-    console.log('path = ' + path);
 
     if (path !== -1) {
       this.activePicture = path;
@@ -75,39 +74,26 @@ define(['./utils'], function(utils) {
         this.previewNumberBlock.appendChild(newImg);
       }
     } else {
-      console.log('нет такой картинки');
-      this.hide();
+      this.closeGallery();
     }
   };
 
   Gallery.prototype.hashchange = function() {
-    var hash = this.getLocation();
-    console.log('событие hashchange');
+    var hash = location.hash.match(/#photo\/(\S+)/);
+
     if (hash) {
-      this.show(hash);
-    } else {
+      this.show(hash[1]);
+    } else if (utils.controlVisible(this.overlayGallery)) {
       this.hide();
     }
   };
 
-  Gallery.prototype.getLocation = function() {
-    var url = location.hash.match(/#photo\/(\S+)/);
-
-    if (url) {
-      return url[1]; // а как меня eslint пропустил с двумя return ??? Вроде требует один return и чтобы она вконце был
+  Gallery.prototype.setLocation = function(hash) {
+    if (typeof hash === 'number') {
+      location.hash = 'photo/' + this.pictures[hash];
+    } else {
+      location.hash = '';
     }
-
-    return null;
-  };
-
-  Gallery.prototype.setLocation = function(n) {
-    var url = '';
-
-    if (n >= 0) {
-      url = 'photo/' + this.pictures[n];
-    }
-
-    location.hash = url;
   };
   return Gallery;
 });
