@@ -26,15 +26,13 @@ define(['./form', './game', './gallery', './reviews'], function(form, Game, Gall
   var galleryLinkAll = document.querySelectorAll('.photogallery .photogallery-image');
 
   var galleryImgSrc = Array.prototype.map.call(galleryImgAll, function(img) {
-    return img.src;
+    return img.getAttribute('src');
   });
 
   var gallery = new Gallery(galleryImgSrc);
 
   Array.prototype.forEach.call(galleryLinkAll, function(link, i) {
-    link.addEventListener('click', function() {
-      gallery.show(i);
-    });
+    link.addEventListener('click', gallery.setLocation.bind(gallery, i));
   });
 
 });

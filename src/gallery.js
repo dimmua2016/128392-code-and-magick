@@ -17,48 +17,97 @@ define(['./utils'], function(utils) {
     this.hide = this.hide.bind(this);
     this.prev = this.prev.bind(this);
     this.next = this.next.bind(this);
+
+    this.setLocation = this.setLocation.bind(this);
+    window.addEventListener('hashchange', this.hashchange.bind(this));
+
+    this.hashchange();
   };
 
-  Gallery.prototype.show = function(n) {
-    this.overlayGalleryClose.addEventListener('click', this.hide);
+  Gallery.prototype.show = function(hash) {
+    console.log('show hash = ' + hash);
+    this.overlayGalleryClose.addEventListener('click', this.setLocation);
     this.overlayGalleryControlLeft.addEventListener('click', this.prev);
     this.overlayGalleryControlRight.addEventListener('click', this.next);
-    this.setActivePicture(n);
+    this.setActivePicture(hash);
     utils.controlVisible(this.overlayGallery, true);
+
   };
 
   Gallery.prototype.prev = function() {
     if (this.activePicture !== 0) {
-      this.setActivePicture(this.activePicture - 1);
+      this.setLocation(this.activePicture - 1);
     }
   };
 
   Gallery.prototype.next = function() {
     if (this.activePicture !== this.pictures.length - 1) {
-      this.setActivePicture(this.activePicture + 1);
+      this.setLocation(this.activePicture + 1);
     }
   };
 
   Gallery.prototype.hide = function() {
-    this.overlayGalleryClose.removeEventListener('click', this.hide);
+    console.log('hide');
+    this.overlayGalleryClose.removeEventListener('click', this.setLocation);
     this.overlayGalleryControlLeft.removeEventListener('click', this.prev);
     this.overlayGalleryControlRight.removeEventListener('click', this.next);
     utils.controlVisible(this.overlayGallery, false);
   };
 
-  Gallery.prototype.setActivePicture = function(n) {
-    this.activePicture = n;
-    this.previewNumberCurrent.textContent = this.activePicture + 1;
+  Gallery.prototype.setActivePicture = function(path) {
 
-    var img = this.previewNumberBlock.querySelector('img');
-
-    if (img) {
-      img.src = this.pictures[this.activePicture];
-    } else {
-      var newImg = new Image();
-      newImg.src = this.pictures[this.activePicture];
-      this.previewNumberBlock.appendChild(newImg);
+    if (typeof path === 'string') {
+      path = this.pictures.indexOf(path);
     }
+
+    console.log('path = ' + path);
+
+    if (path !== -1) {
+      this.activePicture = path;
+      this.previewNumberCurrent.textContent = this.activePicture + 1;
+
+      var img = this.previewNumberBlock.querySelector('img');
+      if (img) {
+        img.src = this.pictures[this.activePicture];
+      } else {
+        var newImg = new Image();
+        newImg.src = this.pictures[this.activePicture];
+        this.previewNumberBlock.appendChild(newImg);
+      }
+    } else {
+      console.log('нет такой картинки');
+      this.hide();
+    }
+  };
+
+  Gallery.prototype.hashchange = function() {
+    var hash = this.getLocation();
+    console.log('событие hashchange');
+    if (hash) {
+      this.show(hash);
+    } else {
+      this.hide();
+    }
+  };
+
+  Gallery.prototype.getLocation = function() {
+    var url = location.hash.match(/#photo\/(\S+)/);
+
+    if (url) {
+      return url[1]; // а как меня eslint пропустил с двумя return ??? Вроде требует один return и чтобы она вконце был
+    }
+
+    return null;
+  };
+
+  Gallery.prototype.setLocation = function(n) {
+    var url = '';
+
+    if (n >= 0) {
+      url = 'photo/' + this.pictures[n];
+    }
+
+    location.hash = url;
   };
   return Gallery;
 });
